@@ -1,15 +1,4 @@
-# ==================================================
-# Splunk Deployment Server & Universal Forwarder Environment
-# --------------------------------------------------
-# - 1 Deployment Server (DS)
-# - 1 Universal Forwarder (UF)
-# - 1 Indexer
-# - Uses external Docker network: skynet
-# - Requires .env file
-# ==================================================
-
 services:
-
   # -------------------------------
   # Deployment Server (DS)
   # -------------------------------
@@ -71,7 +60,7 @@ services:
     ports:
       - "8002:8000"
       - "8093:8089"
-      - "9997:9997"
+      - "9997"
     environment:
       SPLUNK_PASSWORD: ${SPLUNK_PASSWORD}
       SPLUNK_GENERAL_TERMS: "--accept-sgt-current-at-splunk-com"
@@ -81,14 +70,12 @@ services:
     restart: unless-stopped
     volumes:
       - idx1_data:/opt/splunk
-
 # -------------------------------
 # Networks
 # -------------------------------
 networks:
   skynet:
     external: true
-
 # -------------------------------
 # Named Volumes
 # -------------------------------

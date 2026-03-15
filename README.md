@@ -2,133 +2,133 @@
 
 ## Overview
 
-This repository provides a Docker-based Splunk lab environment designed to simulate **Deployment Server (DS) and Universal Forwarder (UF) deployment**.
+This repository provides a Docker-based Splunk environment designed to simulate how a **Deployment Server (DS)** manages **Universal Forwarders (UF)** and connects them to an Indexer.
 
-It supports two deployment modes:
+The lab contains:
 
-1. [**Base Environment (Unconfigured)**](https://github.com/michaelsayala/splunk-ds-uf-docker-lab/blob/main/docker-compose-unconfigure.yml)
-2. [**Preconfigured DS with UF Clients**](https://github.com/michaelsayala/splunk-ds-uf-docker-lab/blob/main/docker-compose-ds.yml)
+- **1 Deployment Server (ds1)**
+- **1 Universal Forwarder (uf1)**
+- **1 Indexer (idx1)**
 
-****
-This lab is intended for **learning, testing, troubleshooting, and demonstrating Deployment Server and Universal Forwarder deployment in a controlled environment**.
+This environment allows you to practice:
+
+- Configuring a Deployment Server
+- Deploying apps to Universal Forwarders
+- Connecting Universal Forwarders to Indexers
+- Monitoring forwarder activity in Splunk
 
 ---
 
 ## Architecture
 
-### Base Environment
+```
+flowchart TB
 
-- Single Splunk Enterprise container acting as a Deployment Server  
-- Universal Forwarders not configured by default  
-- Suitable for practicing deployment server configuration, app deployment, and client registration  
+%% =========================
+%% Indexer
+%% =========================
+IDX["Indexer (idx1)"]
 
-### Preconfigured DS with UF Clients
+%% =========================
+%% Deployment Server
+%% =========================
+DS["Deployment Server (ds1)"]
 
-- 1 Deployment Server container  
-- 1 Universal Forwarder containers configured as clients  
-- Deployment server apps preloaded  
-- Universal Forwarders automatically poll DS and pull apps  
-- Forwarding optional (can forward to a preconfigured Indexer or HF) 
+%% =========================
+%% Universal Forwarder
+%% =========================
+UF["Universal Forwarder (uf1)"]
+
+%% =========================
+%% Relationships
+%% =========================
+DS --> UF
+UF --> IDX
+```
+
+| Component          | Hostname | Web Port | Management Port | Indexing Port |
+|-------------------|----------|----------|----------------|---------------|
+| Deployment Server  | ds1      | 8000     | 8089           | N/A           |
+| Universal Forwarder| uf1      | N/A      | 8089           | N/A           |
+| Indexer            | idx1     | 8000     | 8089           | 9997          |
 
 ---
+All containers run on the external Docker network:
 
-## Components
-
-| Component       | Hostname | Web UI Port | Management Port | Role           |
-|-----------------|----------|------------|----------------|----------------|
-| Deployment Server    | hf1      | 8001       | 8091           | Forwarder      |
-| Indexer              | idx1     | 8002       | 8092           | Member         |
-| Universal Forwarder  | uf1      | N/A        | 8093           | Cluster Master |
+```
+skynet
+```
 
 ---
 
 ## Prerequisites
 
-- Docker  
-- Docker Compose  
-- External Docker network named `skynet`
+### 1 Install Docker
 
-Create the required Docker network before deployment:
+Install Docker and Docker Compose.
 
+```
+https://docs.docker.com/get-docker/
+```
 
-```bash
+---
+
+### 2 Create Docker Network
+
+Create the external network used by the lab.
+
+```
 docker network create skynet
 ```
 
 ---
 
-## Repository Structure
+### 3 Create `.env` File
+
+Create a `.env` file in the project root.
+
+Example:
 
 ```
-.
-├── docker-compose-ds-uf.yml
-├── docker-compose-unconfigure.yml
-├── .env.example
-└── README.md
+SPLUNK_PASSWORD=YourStrongPassword
+SPLUNK_SHC_SECRET=SHClusterSecret123
 ```
 
 ---
 
-## Environment Variables
+## Deployment Modes
 
-Create a `.env` file in the root directory. Do not commit this file to GitHub.
+### 1 Base Environment
 
-Example `.env`:
+This deployment starts the following components:
 
-```
-SPLUNK_PASSWORD=splunkpassword
-```
+- 1 Indexer (idx1) – already configured and ready to receive data  
+- 1 Deployment Server (ds1) – running but **not yet configured**  
+- 1 Universal Forwarder (uf1) – running but **not yet configured or enabled**  
 
-Add `.env` to your `.gitignore`.
+This mode allows you to manually practice:
 
----
+- Configuring the Deployment Server  
+- Setting up apps and server classes  
+- Registering the Universal Forwarder with the Deployment Server  
+- Forwarding data from the Universal Forwarder to the Indexer  
 
-## Deployment Instructions
-
-### Deploy Base Environment (Unconfigured)
-
-This deploys a standalone DS and UF clients without app deployment or forwarding configured.
-
-```bash
-docker compose -f docker-compose_unconfigure.yml up -d
-```
-
-Access the Deployment Server:
-
-- DS1: http://localhost:8001  
-
-Use this mode if you want to manually configure:
-
-- Deployment Server apps
-- UF client registration (`splunk set deploy-poll`)
-- Optional forwarding to Indexers/HF
+This setup is useful for learning manual deployment server and UF configuration.
 
 ---
 
-### Deploy Preconfigured DS with UF Clients
+### 2 Preconfigured Deployment Environment
 
-This deployment automatically configures:
+This deployment automatically configures the Universal Forwarder to communicate with the Deployment Server and forward data to the Indexer during container startup.  
 
-- Deployment Server with preloaded apps  
-- Universal Forwarders polling the DS  
-- Optional forwarding to a configured Indexer or HF  
+The configuration includes:
 
-```bash
-docker compose -f docker-compose-ds-uf.yml up -d
-```
+- Deployment Server automatically serving apps from `deployment-apps`  
+- Universal Forwarder automatically registered to the Deployment Server  
+- Indexer ready to receive forwarded data from UF  
 
-Access the Deployment Server:
+This mode is useful for:
 
-- DS1: http://localhost:8006
-
-Verify UF client registration:
-
-```bash
-docker exec -it uf1 /opt/splunkforwarder/bin/splunk show deploy-poll
-```
-
-**Expected Output:**  
-```
-Client is configured to pull apps from DS: ds1:8089
-Apps deployed successfully
-```
+- automated lab environments  
+- repeatable testing  
+- learning deployment server and UF architecture  

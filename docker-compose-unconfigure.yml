@@ -1,14 +1,4 @@
-# ==================================================
-# Splunk Deployment Server & Universal Forwarder Environment
-# --------------------------------------------------
-# - 1 Deployment Server (DS) - unconfigure
-# - 1 Universal Forwarder (UF) - unconfigure
-# - 1 Indexer - configured
-# - Uses external Docker network: skynet
-# - Requires .env file
-# ==================================================
 services:
-
   # -------------------------------
   # Deployment Server (DS)
   # -------------------------------
@@ -30,7 +20,6 @@ services:
     restart: unless-stopped
     volumes:
       - ds1_data:/opt/splunk
-
   # -------------------------------
   # Universal Forwarder (UF)
   # -------------------------------
@@ -51,7 +40,6 @@ services:
     restart: unless-stopped
     volumes:
       - uf1_data:/opt/splunk
-
   # -------------------------------
   # Indexer
   # -------------------------------
@@ -74,14 +62,12 @@ services:
     restart: unless-stopped
     volumes:
       - idx1_data:/opt/splunk
-
 # -------------------------------
 # Networks
 # -------------------------------
 networks:
   skynet:
     external: true
-
 # -------------------------------
 # Named Volumes
 # -------------------------------

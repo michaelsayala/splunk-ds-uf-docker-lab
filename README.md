@@ -21,7 +21,7 @@ This environment allows you to practice:
 
 ## Architecture
 
-```
+```mermaid
 flowchart TB
 
 %% =========================

@@ -91,7 +91,6 @@ Example:
 
 ```
 SPLUNK_PASSWORD=YourStrongPassword
-SPLUNK_SHC_SECRET=SHClusterSecret123
 ```
 
 ---

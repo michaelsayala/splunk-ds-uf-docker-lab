@@ -1,0 +1,78 @@
+services:
+  # -------------------------------
+  # Deployment Server (DS)
+  # -------------------------------
+  ds1:
+    image: splunk/splunk:9.0.3-openjdk11
+    container_name: ds1
+    hostname: ds1
+    networks:
+      - skynet
+    ports:
+      - "8001:8000"
+      - "8091:8089"
+    environment:
+      SPLUNK_PASSWORD: ${SPLUNK_PASSWORD}
+      SPLUNK_GENERAL_TERMS: "--accept-sgt-current-at-splunk-com"
+      SPLUNK_START_ARGS: "--accept-license"
+    tty: true
+    stdin_open: true
+    restart: unless-stopped
+    volumes:
+      - ds1_data:/opt/splunk
+  # -------------------------------
+  # Universal Forwarder (UF)
+  # -------------------------------
+  uf1:
+    image: splunk/universalforwarder:latest
+    container_name: uf1
+    hostname: uf1
+    networks:
+      - skynet
+    ports:
+      - "8092:8089"
+    environment:
+      SPLUNK_PASSWORD: ${SPLUNK_PASSWORD}
+      SPLUNK_GENERAL_TERMS: "--accept-sgt-current-at-splunk-com"
+      SPLUNK_START_ARGS: "--accept-license"
+    tty: true
+    stdin_open: true
+    restart: unless-stopped
+    volumes:
+      - uf1_data:/opt/splunk
+  # -------------------------------
+  # Indexer
+  # -------------------------------
+  idx1:
+    image: splunk/splunk:9.0.3-openjdk11
+    container_name: idx1
+    hostname: idx1
+    networks:
+      - skynet
+    ports:
+      - "8002:8000"
+      - "8093:8089"
+      - "9997:9997"
+    environment:
+      SPLUNK_PASSWORD: ${SPLUNK_PASSWORD}
+      SPLUNK_GENERAL_TERMS: "--accept-sgt-current-at-splunk-com"
+      SPLUNK_START_ARGS: "--accept-license"
+    tty: true
+    stdin_open: true
+    restart: unless-stopped
+    volumes:
+      - idx1_data:/opt/splunk
+# -------------------------------
+# Networks
+# -------------------------------
+networks:
+  skynet:
+    external: true
+# -------------------------------
+# Named Volumes
+# -------------------------------
+volumes:
+  ds1_data:
+  uf1_data:
+  idx1_data:
+  ds1_apps_data:

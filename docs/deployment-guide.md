@@ -114,7 +114,7 @@
 
 ---
 
-### Method 1: Configuration File (outputs.conf)
+### Method 1: Configuration File
 
 1. **Access Command Line Interface**
 
@@ -155,7 +155,7 @@
 
 ---
 
-### Method 2: Configuration File (inputs.conf)
+### Method 2: Configuration File
 
 1. **Create or Edit inputs.conf:**
    ```bash

@@ -20,7 +20,8 @@ services:
     stdin_open: true
     restart: unless-stopped
     volumes:
-      - ds1_data:/opt/splunk
+      - ds1_etc:/opt/splunk/etc
+      - ds1_var:/opt/splunk/var
       - ./ds1_apps_data:/opt/splunk/etc/deployment-apps
 
   # -------------------------------
@@ -46,7 +47,8 @@ services:
     stdin_open: true
     restart: unless-stopped
     volumes:
-      - uf1_data:/opt/splunk
+      - uf1_etc:/opt/splunk/etc
+      - uf1_var:/opt/splunk/var
 
   # -------------------------------
   # Indexer
@@ -69,7 +71,8 @@ services:
     stdin_open: true
     restart: unless-stopped
     volumes:
-      - idx1_data:/opt/splunk
+      - idx1_etc:/opt/splunk/etc
+      - idx1_var:/opt/splunk/var
 # -------------------------------
 # Networks
 # -------------------------------
@@ -80,7 +83,9 @@ networks:
 # Named Volumes
 # -------------------------------
 volumes:
-  ds1_data:
-  uf1_data:
-  idx1_data:
-  ds1_apps_data:
+  idx1_etc:
+  idx1_var:
+  ds1_etc:
+  ds1_var:
+  uf1_etc:
+  uf1_var:

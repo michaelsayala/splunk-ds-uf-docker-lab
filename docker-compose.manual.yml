@@ -7,10 +7,21 @@ x-splunk-env: &splunk-env
   SPLUNK_START_ARGS: "--accept-license"
 
 # -------------------------------
-# Common Service Configuration
+# Common Enterprise Service Configuration
 # -------------------------------
 x-splunk-common: &splunk-common
   image: splunk/splunk:9.0.3-openjdk11
+  restart: unless-stopped
+  networks:
+    - skynet
+  tty: true
+  stdin_open: true
+
+# -------------------------------
+# Common UF Service Config
+# -------------------------------
+x-splunk-uf-common: &splunk-uf-common
+  image: splunk/universalforwarder:latest
   restart: unless-stopped
   networks:
     - skynet
@@ -37,13 +48,13 @@ services:
   # Universal Forwarder (UF)
   # -------------------------------
   uf1:
-    <<: *splunk-common
+    <<: *splunk-uf-common
     hostname: uf1
     environment:
       <<: *splunk-env
     volumes:
-      - uf1_etc:/opt/splunk/etc
-      - uf1_var:/opt/splunk/var
+      - uf1_etc:/opt/splunkforwarder/etc
+      - uf1_var:/opt/splunkforwarder/var
 
   # -------------------------------
   # Indexer

@@ -39,6 +39,7 @@ services:
       - "8001:8000"
     environment:
       <<: *splunk-env
+      SPLUNK_ROLE: splunk_deployment_server
     volumes:
       - ds1_etc:/opt/splunk/etc
       - ds1_var:/opt/splunk/var
@@ -52,6 +53,8 @@ services:
     hostname: uf1
     environment:
       <<: *splunk-env
+      SPLUNK_INDEXER_URL: idx1
+      SPLUNK_DEPLOYMENT_SERVER: ds1
     volumes:
       - uf1_etc:/opt/splunkforwarder/etc
       - uf1_var:/opt/splunkforwarder/var

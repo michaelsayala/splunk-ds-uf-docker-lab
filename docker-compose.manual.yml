@@ -1,83 +1,78 @@
+# -------------------------------
+# Common Environment Variables
+# -------------------------------
+x-splunk-env: &splunk-env
+  SPLUNK_PASSWORD: ${SPLUNK_PASSWORD}
+  SPLUNK_GENERAL_TERMS: "--accept-sgt-current-at-splunk-com"
+  SPLUNK_START_ARGS: "--accept-license"
+
+# -------------------------------
+# Common Service Configuration
+# -------------------------------
+x-splunk-common: &splunk-common
+  image: splunk/splunk:9.0.3-openjdk11
+  restart: unless-stopped
+  networks:
+    - skynet
+  tty: true
+  stdin_open: true
+
 services:
   # -------------------------------
   # Deployment Server (DS)
   # -------------------------------
   ds1:
-    image: splunk/splunk:9.0.3-openjdk11
-    container_name: ds1
+    <<: *splunk-common
     hostname: ds1
-    networks:
-      - skynet
     ports:
       - "8001:8000"
-      - "8091:8089"
     environment:
-      SPLUNK_PASSWORD: ${SPLUNK_PASSWORD}
-      SPLUNK_GENERAL_TERMS: "--accept-sgt-current-at-splunk-com"
-      SPLUNK_START_ARGS: "--accept-license"
-    tty: true
-    stdin_open: true
-    restart: unless-stopped
+      <<: *splunk-env
     volumes:
       - ds1_etc:/opt/splunk/etc
       - ds1_var:/opt/splunk/var
+      - ./ds1_apps_data:/opt/splunk/etc/deployment-apps
+
   # -------------------------------
   # Universal Forwarder (UF)
   # -------------------------------
   uf1:
-    image: splunk/universalforwarder:latest
-    container_name: uf1
+    <<: *splunk-common
     hostname: uf1
-    networks:
-      - skynet
-    ports:
-      - "8092:8089"
     environment:
-      SPLUNK_PASSWORD: ${SPLUNK_PASSWORD}
-      SPLUNK_GENERAL_TERMS: "--accept-sgt-current-at-splunk-com"
-      SPLUNK_START_ARGS: "--accept-license"
-    tty: true
-    stdin_open: true
-    restart: unless-stopped
+      <<: *splunk-env
     volumes:
       - uf1_etc:/opt/splunk/etc
       - uf1_var:/opt/splunk/var
+
   # -------------------------------
   # Indexer
   # -------------------------------
   idx1:
-    image: splunk/splunk:9.0.3-openjdk11
-    container_name: idx1
+    <<: *splunk-common
     hostname: idx1
-    networks:
-      - skynet
     ports:
       - "8002:8000"
-      - "8093:8089"
-      - "9997:9997"
     environment:
-      SPLUNK_PASSWORD: ${SPLUNK_PASSWORD}
-      SPLUNK_GENERAL_TERMS: "--accept-sgt-current-at-splunk-com"
-      SPLUNK_START_ARGS: "--accept-license"
-    tty: true
-    stdin_open: true
-    restart: unless-stopped
+      <<: *splunk-env
     volumes:
       - idx1_etc:/opt/splunk/etc
       - idx1_var:/opt/splunk/var
+
 # -------------------------------
 # Networks
 # -------------------------------
 networks:
   skynet:
-    external: true
+    driver: bridge
+    
 # -------------------------------
 # Named Volumes
 # -------------------------------
 volumes:
-  idx1_etc:
-  idx1_var:
   ds1_etc:
   ds1_var:
   uf1_etc:
   uf1_var:
+  idx1_etc:
+  idx1_var:

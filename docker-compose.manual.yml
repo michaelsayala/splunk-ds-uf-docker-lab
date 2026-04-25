@@ -18,7 +18,7 @@ x-splunk-common: &splunk-common
   stdin_open: true
 
 # -------------------------------
-# Common UF Service Config
+# Common UF Service Configuration
 # -------------------------------
 x-splunk-uf-common: &splunk-uf-common
   image: splunk/universalforwarder:latest
